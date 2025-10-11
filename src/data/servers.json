@@ -1,0 +1,11 @@
+[
+  {
+    "id": "primary",
+    "name": "Primary Server",
+    "crconBase": "http://148.113.46.46:8010",
+    "token": "2ewillfightthemonthebeachesandinthestreets",
+    "host": "45.137.245.36",
+    "port": 28016,
+    "rconPassword": "satch"
+  }
+]

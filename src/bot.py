@@ -14,7 +14,7 @@ GUILD_ID = int(os.getenv("DISCORD_GUILD_ID", "0"))
 CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID", "0"))
 
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
-ADMIN_ROLE = os.getenv("ADMIN_ROLE", "HLL Admins")
+ADMIN_ROLE = os.getenv("ADMIN_ROLE", "").strip()
 AUDIT_CHANNEL_ID = int(os.getenv("AUDIT_CHANNEL_ID", "0"))
 
 DEFAULT_CRCON_BASE = os.getenv("CRCON_BASE_URL", "").strip()
@@ -51,7 +51,13 @@ else:
 
 def is_admin(inter: discord.Interaction) -> bool:
     if isinstance(inter.user, discord.Member):
-        return any(r.name == ADMIN_ROLE for r in inter.user.roles)
+        member = inter.user
+        if not ADMIN_ROLE:
+            return True
+        if any(r.name == ADMIN_ROLE for r in member.roles):
+            return True
+        perms = member.guild_permissions
+        return perms.administrator or perms.manage_guild or perms.manage_roles
     return False
 
 def get_crcon_client(server_id: str) -> TcpRconClient:
@@ -75,13 +81,19 @@ class ControlPanel(discord.ui.View):
         super().__init__(timeout=None)
         self.server_id: str | None = None
 
-    @discord.ui.select(placeholder="Select Server", min_values=1, max_values=1,
-                       options=[discord.SelectOption(label=s["name"], value=s["id"]) for s in SERVERS.values()])
+    @discord.ui.select(
+        placeholder="Select Server",
+        min_values=1,
+        max_values=1,
+        options=[discord.SelectOption(label=s["name"], value=s["id"]) for s in SERVERS.values()],
+        custom_id="control_panel_select_server",
+    )
     async def select_server(self, inter: discord.Interaction, sel: discord.ui.Select):
         self.server_id = sel.values[0]
+        set_user_server(inter.user.id, self.server_id)
         await inter.response.send_message(f"Server set to **{SERVERS[self.server_id]['name']}**.", ephemeral=True)
 
-    @discord.ui.button(label="Change Map", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Change Map", style=discord.ButtonStyle.primary, custom_id="control_panel_change_map")
     async def change_map(self, inter: discord.Interaction, btn: discord.ui.Button):
         if not is_admin(inter):
             return await inter.response.send_message("Not authorized.", ephemeral=True)
@@ -89,8 +101,11 @@ class ControlPanel(discord.ui.View):
             return await inter.response.send_message("Pick a server first.", ephemeral=True)
         await start_change_map_buttons(inter, self.server_id)
 
-
-    @discord.ui.button(label="Set Objectives (current map)", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(
+        label="Set Objectives (current map)",
+        style=discord.ButtonStyle.secondary,
+        custom_id="control_panel_set_objectives",
+    )
     async def set_objectives(self, inter: discord.Interaction, btn: discord.ui.Button):
         if not is_admin(inter):
             return await inter.response.send_message("Not authorized.", ephemeral=True)
@@ -403,32 +418,34 @@ class Bot(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-    # Persistent control panel
-    self.add_view(ControlPanel())
+        # Persistent control panel
+        self.add_view(ControlPanel())
 
-    # Guild-scoped command sync if provided
-    if GUILD_ID:
-        await self.tree.sync(guild=discord.Object(id=GUILD_ID))
-        log.info(f"Synced slash commands to guild {GUILD_ID}")
-    else:
-        await self.tree.sync()
-        log.info("Synced slash commands globally (no DISCORD_GUILD_ID set)")
+        # Guild-scoped command sync if provided
+        if GUILD_ID:
+            await self.tree.sync(guild=discord.Object(id=GUILD_ID))
+            log.info(f"Synced slash commands to guild {GUILD_ID}")
+        else:
+            await self.tree.sync()
+            log.info("Synced slash commands globally (no DISCORD_GUILD_ID set)")
 
-async def on_ready(self):
-    log.info(f"Bot connected as {self.user}")
-    if CHANNEL_ID:
-        ch = self.get_channel(CHANNEL_ID)
-        if ch:
-            # Post control panel if not present / as a fresh message
-            await ch.send("**HLL RCON Control Panel**
-1) Select **Server**
-2) Choose **Change Map** or **Set Objectives (current map)**", view=ControlPanel())
+    async def on_ready(self):
+        log.info(f"Bot connected as {self.user}")
+        if CHANNEL_ID:
+            ch = self.get_channel(CHANNEL_ID)
+            if ch:
+                # Post control panel if not present / as a fresh message
+                content = (
+                    "**HLL RCON Control Panel**\n"
+                    "1) Select **Server**\n"
+                    "2) Choose **Change Map** or **Set Objectives (current map)**"
+                )
+                await ch.send(content, view=ControlPanel())
 
 
 bot = Bot()
 
 @bot.tree.command(name="rcon_panel", description="Post or refresh the RCON Control Panel here.")
-@app_commands.checks.has_role(ADMIN_ROLE)
 async def rcon_panel(inter: discord.Interaction):
     view = ControlPanel()
     # remember the user's last chosen server for wizard threading
@@ -449,6 +466,9 @@ async def rcon_panel(inter: discord.Interaction):
 async def rcon_panel_error(inter: discord.Interaction, error: Exception):
     await inter.response.send_message(f"Error: {error}", ephemeral=True)
 
+if ADMIN_ROLE:
+    rcon_panel = app_commands.checks.has_role(ADMIN_ROLE)(rcon_panel)
+
 def main():
     if not TOKEN:
         raise SystemExit("DISCORD_TOKEN not set")
@@ -459,7 +479,6 @@ if __name__ == "__main__":
 
 
 @bot.tree.command(name="rcon_http_ping", description="Test CRCON HTTP execute with GetClientReferenceData(SetSectorLayout).")
-@app_commands.checks.has_role(ADMIN_ROLE)
 async def rcon_http_ping(inter: discord.Interaction, server_id: str | None = None):
     client = get_http_client(server_id)
     if not client:
@@ -468,3 +487,6 @@ async def rcon_http_ping(inter: discord.Interaction, server_id: str | None = Non
     res = await client.get_client_reference("SetSectorLayout")
     out = json.dumps(res)[:1900]
     await inter.followup.send(f"HTTP OK. Response snippet:\n```json\n{out}\n```", ephemeral=True)
+
+if ADMIN_ROLE:
+    rcon_http_ping = app_commands.checks.has_role(ADMIN_ROLE)(rcon_http_ping)
