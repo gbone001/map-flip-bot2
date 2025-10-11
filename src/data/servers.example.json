@@ -1,0 +1,29 @@
+[
+  {
+    "id": "anzr_east",
+    "name": "ANZR East",
+    "crconBase": "https://crcon-east.example",
+    "token": "${CRCON_EAST_TOKEN}",
+    "host": "crcon-japan.anzr.org",
+    "port": 22222,
+    "rconPassword": "supersecret"
+  },
+  {
+    "id": "anzr_west",
+    "name": "ANZR West",
+    "crconBase": "https://crcon-west.example",
+    "token": "${CRCON_WEST_TOKEN}",
+    "host": "crcon-japan.anzr.org",
+    "port": 22222,
+    "rconPassword": "supersecret"
+  },
+  {
+    "id": "scrim",
+    "name": "Scrim Server",
+    "crconBase": "https://crcon-scrim.example",
+    "token": "${CRCON_SCRIM_TOKEN}",
+    "host": "crcon-japan.anzr.org",
+    "port": 22222,
+    "rconPassword": "supersecret"
+  }
+]

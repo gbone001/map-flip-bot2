@@ -1,0 +1,7 @@
+services:
+  hll-rcon-bot:
+    build: .
+    env_file: .env
+    volumes:
+      - ./src:/app/src:rw
+    restart: unless-stopped

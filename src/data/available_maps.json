@@ -1,0 +1,146 @@
+[
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "Carentan",
+    "variant": "Day",
+    "mapId": "CAR_S_1944_Day_P_Skirmish"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "Carentan",
+    "variant": "Dusk",
+    "mapId": "CAR_S_1944_Dusk_P_Skirmish"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "Carentan",
+    "variant": "Rain",
+    "mapId": "CAR_S_1944_Rain_P_Skirmish"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Carentan (GER Attack)",
+    "variant": "Day",
+    "mapId": "carentan_offensive_ger"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Carentan (US Attack)",
+    "variant": "Day",
+    "mapId": "carentan_offensive_us"
+  },
+  {
+    "gameType": "Warfare",
+    "mapPretty": "Carentan",
+    "variant": "Day",
+    "mapId": "carentan_warfare"
+  },
+  {
+    "gameType": "Warfare",
+    "mapPretty": "Carentan",
+    "variant": "Night",
+    "mapId": "carentan_warfare_night"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Driel (GER Attack)",
+    "variant": "Day",
+    "mapId": "driel_offensive_ger"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Driel (US/GB Attack)",
+    "variant": "Day",
+    "mapId": "driel_offensive_us"
+  },
+  {
+    "gameType": "Warfare",
+    "mapPretty": "Driel",
+    "variant": "Dawn",
+    "mapId": "driel_warfare"
+  },
+  {
+    "gameType": "Warfare",
+    "mapPretty": "Driel",
+    "variant": "Night",
+    "mapId": "driel_warfare_night"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "Driel",
+    "variant": "Dawn",
+    "mapId": "DRL_S_1944_P_Skirmish"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "Driel",
+    "variant": "Day",
+    "mapId": "DRL_S_1944_Day_P_Skirmish"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "Driel",
+    "variant": "Night",
+    "mapId": "DRL_S_1944_Night_P_Skirmish"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "El Alamein",
+    "variant": "Day",
+    "mapId": "ELA_S_1942_P_Skirmish"
+  },
+  {
+    "gameType": "Skirmish",
+    "mapPretty": "El Alamein",
+    "variant": "Dusk",
+    "mapId": "ELA_S_1942_Night_P_Skirmish"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "El Alamein (CW/B8A Attack)",
+    "variant": "Day",
+    "mapId": "elalamein_offensive_CW"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "El Alamein (GER/DAK Attack)",
+    "variant": "Day",
+    "mapId": "elalamein_offensive_ger"
+  },
+  {
+    "gameType": "Warfare",
+    "mapPretty": "El Alamein",
+    "variant": "Day",
+    "mapId": "elalamein_warfare"
+  },
+  {
+    "gameType": "Warfare",
+    "mapPretty": "El Alamein",
+    "variant": "Dusk",
+    "mapId": "elalamein_warfare_night"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Elsenborn Ridge (GER Attack)",
+    "variant": "Day",
+    "mapId": "elsenbornridge_offensiveger_day"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Elsenborn Ridge (GER Attack)",
+    "variant": "Dawn",
+    "mapId": "elsenbornridge_offensiveger_morning"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Elsenborn Ridge (GER Attack)",
+    "variant": "Night",
+    "mapId": "elsenbornridge_offensiveger_night"
+  },
+  {
+    "gameType": "Offensive",
+    "mapPretty": "Elsenborn Ridge (US Attack)",
+    "variant": "Day",
+    "mapId": "elsenbornridge_offensiveUS_day"
+  }
+]
