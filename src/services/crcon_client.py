@@ -111,22 +111,36 @@ class CrconClient:
         endpoint: str,
         payload: Dict[str, Any],
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        try:
-            response = await self._client.post(self._url(endpoint), json=payload, headers=self._headers())
-        except Exception as exc:
-            return False, f"{endpoint} error: {exc}", None
+        attempts = [endpoint]
+        if not endpoint.endswith("/"):
+            attempts.append(endpoint.rstrip("/") + "/")
 
-        if response.status_code // 100 != 2:
-            return False, f"HTTP {response.status_code}: {response.text[:200]}", None
+        last_error: Tuple[bool, str, Optional[Dict[str, Any]]] = (False, "Request failed", None)
 
-        try:
-            data = response.json()
-        except ValueError as exc:
-            return False, f"{endpoint} parse error: {exc}", None
+        for idx, ep in enumerate(attempts):
+            try:
+                response = await self._client.post(self._url(ep), json=payload, headers=self._headers())
+            except Exception as exc:
+                last_error = (False, f"{ep} error: {exc}", None)
+                continue
 
-        failed = bool(data.get("failed", False))
-        message = data.get("error") or data.get("result") or "ok"
-        return (not failed, message, data)
+            if response.status_code == 404 and idx + 1 < len(attempts):
+                last_error = (False, f"HTTP 404: {response.text[:200]}", None)
+                continue
+
+            if response.status_code // 100 != 2:
+                return False, f"HTTP {response.status_code}: {response.text[:200]}", None
+
+            try:
+                data = response.json()
+            except ValueError as exc:
+                return False, f"{ep} parse error: {exc}", None
+
+            failed = bool(data.get("failed", False))
+            message = data.get("error") or data.get("result") or "ok"
+            return (not failed, message, data)
+
+        return last_error
 
     async def _get(self, endpoint: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         try:
