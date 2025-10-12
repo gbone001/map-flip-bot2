@@ -42,8 +42,18 @@ class CrconClient:
             headers["Authorization"] = f"{scheme} {self.token}"
         return headers
 
-    def _url(self, endpoint: str) -> str:
-        return f"{self.base}/api/{endpoint}"
+    def _candidate_urls(self, endpoint: str) -> List[str]:
+        if not endpoint:
+            return []
+        trimmed = endpoint.strip("/")
+        variants = []
+        prefixes = [f"api/{trimmed}", trimmed]
+        for path in prefixes:
+            for suffix in ("", "/"):
+                candidate = f"{self.base}/{path}{suffix}".rstrip("/")
+                if candidate not in variants:
+                    variants.append(candidate)
+        return variants
 
     async def _ensure_catalog(self) -> None:
         if self._catalog_ready or not self.base or not self.token:
@@ -111,20 +121,20 @@ class CrconClient:
         endpoint: str,
         payload: Dict[str, Any],
     ) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        attempts = [endpoint]
-        if not endpoint.endswith("/"):
-            attempts.append(endpoint.rstrip("/") + "/")
+        urls = self._candidate_urls(endpoint)
+        if not urls:
+            return False, "Invalid endpoint", None
 
         last_error: Tuple[bool, str, Optional[Dict[str, Any]]] = (False, "Request failed", None)
 
-        for idx, ep in enumerate(attempts):
+        for idx, url in enumerate(urls):
             try:
-                response = await self._client.post(self._url(ep), json=payload, headers=self._headers())
+                response = await self._client.post(url, json=payload, headers=self._headers())
             except Exception as exc:
-                last_error = (False, f"{ep} error: {exc}", None)
+                last_error = (False, f"{url} error: {exc}", None)
                 continue
 
-            if response.status_code == 404 and idx + 1 < len(attempts):
+            if response.status_code == 404 and idx + 1 < len(urls):
                 last_error = (False, f"HTTP 404: {response.text[:200]}", None)
                 continue
 
@@ -134,7 +144,7 @@ class CrconClient:
             try:
                 data = response.json()
             except ValueError as exc:
-                return False, f"{ep} parse error: {exc}", None
+                return False, f"{url} parse error: {exc}", None
 
             failed = bool(data.get("failed", False))
             message = data.get("error") or data.get("result") or "ok"
@@ -143,22 +153,36 @@ class CrconClient:
         return last_error
 
     async def _get(self, endpoint: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
-        try:
-            response = await self._client.get(self._url(endpoint), headers=self._headers())
-        except Exception as exc:
-            return False, f"{endpoint} error: {exc}", None
+        urls = self._candidate_urls(endpoint)
+        if not urls:
+            return False, "Invalid endpoint", None
 
-        if response.status_code // 100 != 2:
-            return False, f"HTTP {response.status_code}: {response.text[:200]}", None
+        last_error: Tuple[bool, str, Optional[Dict[str, Any]]] = (False, "Request failed", None)
 
-        try:
-            data = response.json()
-        except ValueError as exc:
-            return False, f"{endpoint} parse error: {exc}", None
+        for idx, url in enumerate(urls):
+            try:
+                response = await self._client.get(url, headers=self._headers())
+            except Exception as exc:
+                last_error = (False, f"{url} error: {exc}", None)
+                continue
 
-        failed = bool(data.get("failed", False))
-        message = data.get("error") or "ok"
-        return (not failed, message, data)
+            if response.status_code == 404 and idx + 1 < len(urls):
+                last_error = (False, f"HTTP 404: {response.text[:200]}", None)
+                continue
+
+            if response.status_code // 100 != 2:
+                return False, f"HTTP {response.status_code}: {response.text[:200]}", None
+
+            try:
+                data = response.json()
+            except ValueError as exc:
+                return False, f"{url} parse error: {exc}", None
+
+            failed = bool(data.get("failed", False))
+            message = data.get("error") or "ok"
+            return (not failed, message, data)
+
+        return last_error
 
     # ------------------------------------------------------------------ #
     # Public API

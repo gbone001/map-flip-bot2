@@ -114,15 +114,30 @@ class ControlPanel(commands.Cog):
         if ok and info:
             current = info.get("current_map") or {}
             next_map = info.get("next_map") or {}
-            embed.add_field(name="Current Map", value=current.get("map", "Unknown"), inline=True)
-            embed.add_field(name="Next Map", value=next_map.get("map", "Unknown"), inline=True)
+
+            def fmt(entry: dict) -> str:
+                if not isinstance(entry, dict):
+                    return "Unknown"
+                map_id = entry.get("id") or entry.get("map_id") or entry.get("mapId") or "Unknown"
+                mode = entry.get("game_mode") or entry.get("gameMode")
+                env = entry.get("environment") or entry.get("Environment")
+                parts = [str(map_id)]
+                if mode:
+                    parts.append(str(mode))
+                if env:
+                    parts.append(str(env))
+                return " | ".join(parts)
+
+            embed.add_field(name="Current Map", value=fmt(current), inline=False)
+            embed.add_field(name="Next Map", value=fmt(next_map), inline=False)
+
             time_remaining = info.get("time_remaining")
             if isinstance(time_remaining, (int, float)):
                 mins = int(time_remaining // 60)
                 secs = int(time_remaining % 60)
-                embed.add_field(name="Time Remaining", value=f"{mins:02d}:{secs:02d}", inline=True)
+                embed.add_field(name="Time Remaining", value=f"{mins:02d}:{secs:02d}", inline=False)
         else:
-            embed.add_field(name="Current Map", value="Unavailable", inline=True)
+            embed.add_field(name="Current Map", value="Unavailable", inline=False)
 
         layout = await client.get_sector_layout()
         if layout:
