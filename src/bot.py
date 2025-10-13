@@ -171,53 +171,7 @@ def chunked(seq, size):
     for i in range(0, len(seq), size):
         yield seq[i:i+size]
 
-class MapButtons(discord.ui.View):
-    def __init__(self, server_id: str, game_type: str, page: int = 0):
-        super().__init__(timeout=240)
-        self.server_id = server_id
-        self.game_type = game_type
-        self.page = page
-
-        maps = sorted({m["mapPretty"] for m in AVAILABLE_MAPS if m["gameType"] == game_type})
-        self._maps = maps
-        pages = list(chunked(maps, 25)) or [[]]
-        self._pages = pages
-        self._last_page = len(pages) - 1
-        current = pages[page]
-
-        for mp in current:
-            self.add_item(discord.ui.Button(label=mp[:80], style=discord.ButtonStyle.secondary, custom_id=f"map_{mp}"))
-
-        # Pagination controls if needed
-        if self._last_page > 0:
-            if page > 0:
-                self.add_item(discord.ui.Button(label="◀ Prev", style=discord.ButtonStyle.primary, custom_id="map_prev"))
-            if page < self._last_page:
-                self.add_item(discord.ui.Button(label="Next ▶", style=discord.ButtonStyle.primary, custom_id="map_next"))
-        self.add_item(discord.ui.Button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="map_cancel"))
-
-    async def interaction_received(self, inter: discord.Interaction, cid: str):
-        if cid == "map_prev":
-            await inter.response.edit_message(content=f"**{self.game_type}** — choose **Map** (page {self.page})", view=MapButtons(self.server_id, self.game_type, page=self.page-1))
-            return
-        if cid == "map_next":
-            await inter.response.edit_message(content=f"**{self.game_type}** — choose **Map** (page {self.page+2})", view=MapButtons(self.server_id, self.game_type, page=self.page+1))
-            return
-        if cid == "map_cancel":
-            await inter.response.edit_message(content="Cancelled.", view=None)
-            return
-        if cid.startswith("map_"):
-            map_pretty = cid[4:]
-            await start_variant_buttons(inter, self.server_id, self.game_type, map_pretty)
-
-class VariantButtons(discord.ui.View):
-    def __init__(self, server_id: str, game_type: str, map_pretty: str):
-        super().__init__(timeout=240)
-        self.server_id = server_id
-        self.game_type = game_type
-        self.map_pretty = map_pretty
-
-        variants = [m for m in AVAILABLE_MAPS if m["gameType"] == game_type and m["mapPretty"] == map_pretty]
+## MapButtons and VariantButtons removed; replaced by dropdown-based selection
         for v in variants:
             label = v["variant"]
             map_id = v["mapId"]
@@ -237,19 +191,17 @@ class VariantButtons(discord.ui.View):
             await confirm_change_map(inter, self.server_id, self.game_type, self.map_pretty, map_id)
 
 async def start_change_map_buttons(inter: discord.Interaction, server_id: str):
-    v = GameTypeButtons(server_id)
-    _wire_button_callbacks(v)
-    await inter.response.send_message("Choose **Game Type**", ephemeral=True, view=v)
+    # Start the new dropdown-based wizard
+    set_user_server(inter.user.id, server_id)
+    await start_change_map_wizard(inter, server_id)
 
 async def start_map_buttons(inter: discord.Interaction, server_id: str, game_type: str):
-    v = MapButtons(server_id, game_type, page=0)
-    _wire_button_callbacks(v)
-    await inter.response.edit_message(content=f"**{game_type}** — choose **Map** (page 1)", view=v)
+    # Deprecated: replaced by dropdown flow
+    pass
 
 async def start_variant_buttons(inter: discord.Interaction, server_id: str, game_type: str, map_pretty: str):
-    v = VariantButtons(server_id, game_type, map_pretty)
-    _wire_button_callbacks(v)
-    await inter.response.edit_message(content=f"**{game_type}** → **{map_pretty}** — choose **Variant / Time-of-Day**", view=v)
+    # Deprecated: replaced by dropdown flow
+    pass
 
 
 class GameTypeView(discord.ui.View):
