@@ -1,0 +1,182 @@
+[
+  {
+    "map": "PHL_L_1944_Warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["BLOODY BEND", "DEAD MAN'S CORNER", "FORWARD BATTERY"] },
+      { "point": 2, "count": 3, "options": ["DOUVE BRIDGE", "DOUVE RIVER BATTERY", "JOURDAN CANAL"] },
+      { "point": 3, "count": 2, "options": ["CARENTAN CAUSEWAY", "GROULT PILLBOX"] },
+      { "point": 4, "count": 3, "options": ["AID STATION", "MADELEINE BRIDGE", "MADELEINE FARM"] },
+      { "point": 5, "count": 2, "options": ["INGOUF CROSSROADS", "ROAD TO CARENTAN "] }
+    ]
+  },
+  {
+    "map": "carentan_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["502ND START", "BLACTOT", "FARM RUINS"] },
+      { "point": 2, "count": 3, "options": ["DERAILED TRAIN", "PUMPING STATION", "RUINS"] },
+      { "point": 3, "count": 3, "options": ["CANAL CROSSING", "TOWN CENTER", "TRAIN STATION"] },
+      { "point": 4, "count": 3, "options": ["CUSTOMS", "MONT HALAIS", "RAIL CROSSING"] },
+      { "point": 5, "count": 3, "options": ["CANAL LOCKS", "LA MAISON DES ORMES", "RAIL CAUSEWAY"] }
+    ]
+  },
+  {
+    "map": "elalamein_warfare",
+    "objectives": [
+      { "point": 1, "count": 4, "options": ["ARTILLERY GUNS", "DAN RADART 512", "MITEIRIYA RIDGE", "VEHICLE DEPOT"] },
+      { "point": 2, "count": 4, "options": ["EL MREIR", "HAMLET RUINS", "KASBACH OUTLOOK", "WATCHTOWER"] },
+      { "point": 3, "count": 3, "options": ["DESERT RAT TRENCHES", "LUDENDORFF BRIDGE", "VALLEY"] },
+      { "point": 4, "count": 4, "options": ["AIRFIELD COMMAND", "AIRFIELD HANGARS", "FUEL DEPOT", "MÖBELFABRIK"] },
+      { "point": 5, "count": 4, "options": ["AMBUSHED CONVOY", "CLIFFSIDE VILLAGE", "QUARRY", "WALDBURG"] }
+    ]
+  },
+  {
+    "map": "elsenbornridge_warfare",
+    "objectives": [
+      { "point": 1, "count": 1, "options": ["GUN BATTERY"] },
+      { "point": 2, "count": 1, "options": ["FARAHILDE FARM"] },
+      { "point": 3, "count": 1, "options": ["DUGOUT TANKS"] },
+      { "point": 4, "count": 1, "options": ["AA BATTERY"] },
+      { "point": 5, "count": 1, "options": ["FOXHOLES"] }
+    ]
+  },
+  {
+    "map": "foy_warfare",
+    "objectives": [
+      { "point": 1, "count": 2, "options": ["COBRU APPROACH", "ROAD TO NOVILLE"] },
+      { "point": 2, "count": 3, "options": ["COBRU FACTORY", "FLAK BATTERY", "FOY"] },
+      { "point": 3, "count": 2, "options": ["DUGOUT BARN", "WEST BEND"] },
+      { "point": 4, "count": 1, "options": ["BIZORY-FOY ROAD"] },
+      { "point": 5, "count": 3, "options": ["BOIS JACQUES", "FOREST OUTSKIRTS", "ROAD TO BASTOGNE"] }
+    ]
+  },
+  {
+    "map": "hill400_warfare",
+    "objectives": [
+      { "point": 1, "count": 1, "options": ["STUCKCHEN FARM"] },
+      { "point": 2, "count": 2, "options": ["BERGSTEIN CHURCH", "KIRCHWEG"] },
+      { "point": 3, "count": 2, "options": ["HILL 400", "SOUTHERN APPROACH"] },
+      { "point": 4, "count": 2, "options": ["EASTERN SLOPE", "TRAIN WRECK"] },
+      { "point": 5, "count": 2, "options": ["PAPER MILL", "ZERKALL"] }
+    ]
+  },
+  {
+    "map": "hurtgenforest_warfare_V2",
+    "objectives": [
+      { "point": 1, "count": 2, "options": ["LUMBER YARD", "RESERVE STATION"] },
+      { "point": 2, "count": 3, "options": ["KALL TRAIL", "THE RUIN", "WEHEBACH OVERLOOK"] },
+      { "point": 3, "count": 3, "options": ["NORTH PASS", "THE SCAR", "THE SIEGFRIED LINE"] },
+      { "point": 4, "count": 3, "options": ["HILL 15", "JACOB'S BARN", "SALIENT 42"] },
+      { "point": 5, "count": 3, "options": ["GROSSHAU APPROACH", "HURTGEN APPROACH", "LOGGING CAMP"] }
+    ]
+  },
+  {
+    "map": "kharkov_warfare",
+    "objectives": [
+      { "point": 1, "count": 2, "options": ["GERMAN FUEL DUMP", "MARSH TOWN"] },
+      { "point": 2, "count": 2, "options": ["BITTER SPRING", "LUMBER WORKS"] },
+      { "point": 3, "count": 2, "options": ["ST MARY", "WATER MILL"] },
+      { "point": 4, "count": 2, "options": ["BELGOROD OUTSKIRTS", "RIVER CROSSING"] },
+      { "point": 5, "count": 2, "options": ["HAY STORAGE", "WEHRMACHT OUTLOOK"] }
+    ]
+  },
+  {
+    "map": "kursk_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["ARTILLERY POSITION", "GRUSHKI", "GRUSHKI FLANK"] },
+      { "point": 2, "count": 2, "options": ["DEFENCE IN DEPTH", "PANZER'S END"] },
+      { "point": 3, "count": 2, "options": ["THE WINDMILLS", "YAMKI"] },
+      { "point": 4, "count": 2, "options": ["DESTROYED BATTERY", "RUDNO"] },
+      { "point": 5, "count": 3, "options": ["AMMO DUMP", "EASTERN POSITION", "ROAD TO KURSK"] }
+    ]
+  },
+  {
+    "map": "omahabeach_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["CROSSROADS", "LES ISLES", "NAIL FACTORY"] },
+      { "point": 2, "count": 3, "options": ["CHURCH ROAD", "THE ORCHARDS", "YELLOW HOUSE"] },
+      { "point": 3, "count": 4, "options": ["ARTILLERY BATTERY", "TRAIN STATION", "VIERVILLE SUR MER", "WEST VIERVILLE"] },
+      { "point": 4, "count": 4, "options": ["PAVLOV'S HOUSE", "WN70", "WN71", "WN73"] },
+      { "point": 5, "count": 3, "options": ["DOG WHITE", "GRUDININ'S MILL", "THE DRAW"] }
+    ]
+  },
+  {
+    "map": "purpleheartlane_warfare",
+    "objectives": [
+      { "point": 1, "count": 1, "options": ["FORWARD BATTERY"] },
+      { "point": 2, "count": 1, "options": ["DOUVE RIVER BATTERY"] },
+      { "point": 3, "count": 1, "options": ["CARENTAN CAUSEWAY"] },
+      { "point": 4, "count": 1, "options": ["MADELEINE BRIDGE"] },
+      { "point": 5, "count": 1, "options": ["INGOUF CROSSROADS"] }
+    ]
+  },
+  {
+    "map": "remagen_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["ALTE LIEBE BARSCH", "BEWALDET KREUZUNG", "DAN RADART 512"] },
+      { "point": 2, "count": 3, "options": ["ERPEL", "ERPELER LEY", "KASBACH OUTLOOK"] },
+      { "point": 3, "count": 1, "options": ["LUDENDORFF BRIDGE"] },
+      { "point": 4, "count": 3, "options": ["MÖBELFABRIK", "REMAGEN", "SCHLIEFFEN AUSWEG"] },
+      { "point": 5, "count": 2, "options": ["HAGELKREUZ", "MÜHLENWEG"] }
+    ]
+  },
+  {
+    "map": "stalingrad_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["CITY OVERLOOK", "MAMAYEV APPROACH", "NAIL FACTORY"] },
+      { "point": 2, "count": 3, "options": ["DOLGIY RAVINE", "KOMSOMOL HQ", "YELLOW HOUSE"] },
+      { "point": 3, "count": 2, "options": ["CARRIAGE DEPOT", "TRAIN STATION"] },
+      { "point": 4, "count": 3, "options": ["HOUSE OF THE WORKERS", "PAVLOV'S HOUSE", "THE BREWERY"] },
+      { "point": 5, "count": 3, "options": ["GRUDININ'S MILL", "L-SHAPED HOUSE", "VOLGA BANKS"] }
+    ]
+  },
+  {
+    "map": "stmariedumont_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["LE GRAND CHEMIN", "THE BARN", "WINTERS LANDING"] },
+      { "point": 2, "count": 3, "options": ["BRECOURT BATTERY", "CATTLESHEDS", "RUE DE LA GARE"] },
+      { "point": 3, "count": 2, "options": ["AA NETWORK", "THE DUGOUT"] },
+      { "point": 4, "count": 3, "options": ["HUGO'S FARM", "STE MARIE DU MONT", "THE HAMLET"] },
+      { "point": 5, "count": 3, "options": ["HILL 6", "THE CORNER", "THE FIELDS"] }
+    ]
+  },
+  {
+    "map": "stmereeglise_warfare",
+    "objectives": [
+      { "point": 1, "count": 2, "options": ["FLAK POSITION", "VAULAVILLE"] },
+      { "point": 2, "count": 3, "options": ["ROUTE DU HARAS", "RUE DE GAMBOSVILLE", "WESTERN APPROACH"] },
+      { "point": 3, "count": 3, "options": ["CHECKPOINT", "HOSPICE", "SAINTE-MÈRE-ÉGLISE"] },
+      { "point": 4, "count": 3, "options": ["ARTILLERY BATTERY", "MAISON DU CRIQUE", "THE CEMETERY"] },
+      { "point": 5, "count": 3, "options": ["CROSS ROADS", "LES VIEUX VERGERS", "RUISSEAU DE FERME"] }
+    ]
+  },
+  {
+    "map": "tobruk_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["DIVISION HEADQUARTERS", "GUARD ROOM", "TANK GRAVEYARD"] },
+      { "point": 2, "count": 3, "options": ["ALBERGO RISTORANTE MODERNO", "KING SQUARE", "WEST CREEK"] },
+      { "point": 3, "count": 3, "options": ["ADMIRALTY HOUSE", "CHURCH GROUNDS", "DESERT RAT CAVES"] },
+      { "point": 4, "count": 3, "options": ["8TH ARMY MEDICAL HOSPITAL", "ABANDONED AMMO CACHE", "SUPPLY DUMP"] },
+      { "point": 5, "count": 2, "options": ["CARGO WAREHOUSES", "MAKESHIFT AID STATION"] }
+    ]
+  },
+  {
+    "map": "unknown",
+    "objectives": [
+      { "point": 1, "count": 5, "options": ["502ND START", "FARM RUINS", "FLOODED HOUSE", "GUN BATTERY", "MAMMUT RADAR"] },
+      { "point": 2, "count": 5, "options": ["DERAILED TRAIN", "DROWNED FIELDS", "FARAHILDE FARM", "PUMPING STATION", "SUNKEN BRIDGE"] },
+      { "point": 3, "count": 4, "options": ["CANAL CROSSING", "DUGOUT TANKS", "THE CHAPEL", "TRAIN STATION"] },
+      { "point": 4, "count": 3, "options": ["AA BATTERY", "CUSTOMS", "RAIL CROSSING"] },
+      { "point": 5, "count": 5, "options": ["CANAL LOCKS", "FOXHOLES", "LA MAISON DES ORMES", "RED ROOF HOUSE", "TARE GREEN"] }
+    ]
+  },
+  {
+    "map": "utahbeach_warfare",
+    "objectives": [
+      { "point": 1, "count": 3, "options": ["FLOODED HOUSE", "MAMMUT RADAR", "SAINTE MARIE APPROACH"] },
+      { "point": 2, "count": 3, "options": ["DROWNED FIELDS", "LA GRANDE CRIQUE", "SUNKEN BRIDGE"] },
+      { "point": 3, "count": 3, "options": ["THE CHAPEL", "WN4", "WN7"] },
+      { "point": 4, "count": 3, "options": ["AA BATTERY", "HILL 5", "WN5"] },
+      { "point": 5, "count": 3, "options": ["RED ROOF HOUSE", "TARE GREEN", "UNCLE RED"] }
+    ]
+  }
+]
