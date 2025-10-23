@@ -1,12 +1,16 @@
-import os, json, asyncio
+from __future__ import annotations
+
+import asyncio
+from typing import Dict, Optional
+
 import discord
-from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from .tcp_client import TcpRconClient
-from .crcon_http import CrconHttpClient
-from .utils.logger import setup_logger
+from src.config import ServerConfig, Settings, load_settings
+from src.handlers.control_panel import ControlPanel, setup as setup_control_panel
+from src.services.crcon_client import CrconClient
+
 
 load_dotenv()
 log = setup_logger()
@@ -171,7 +175,53 @@ def chunked(seq, size):
     for i in range(0, len(seq), size):
         yield seq[i:i+size]
 
-## MapButtons and VariantButtons removed; replaced by dropdown-based selection
+class MapButtons(discord.ui.View):
+    def __init__(self, server_id: str, game_type: str, page: int = 0):
+        super().__init__(timeout=240)
+        self.server_id = server_id
+        self.game_type = game_type
+        self.page = page
+
+        maps = sorted({m["mapPretty"] for m in AVAILABLE_MAPS if m["gameType"] == game_type})
+        self._maps = maps
+        pages = list(chunked(maps, 25)) or [[]]
+        self._pages = pages
+        self._last_page = len(pages) - 1
+        current = pages[page]
+
+        for mp in current:
+            self.add_item(discord.ui.Button(label=mp[:80], style=discord.ButtonStyle.secondary, custom_id=f"map_{mp}"))
+
+        # Pagination controls if needed
+        if self._last_page > 0:
+            if page > 0:
+                self.add_item(discord.ui.Button(label="◀ Prev", style=discord.ButtonStyle.primary, custom_id="map_prev"))
+            if page < self._last_page:
+                self.add_item(discord.ui.Button(label="Next ▶", style=discord.ButtonStyle.primary, custom_id="map_next"))
+        self.add_item(discord.ui.Button(label="Cancel", style=discord.ButtonStyle.secondary, custom_id="map_cancel"))
+
+    async def interaction_received(self, inter: discord.Interaction, cid: str):
+        if cid == "map_prev":
+            await inter.response.edit_message(content=f"**{self.game_type}** — choose **Map** (page {self.page})", view=MapButtons(self.server_id, self.game_type, page=self.page-1))
+            return
+        if cid == "map_next":
+            await inter.response.edit_message(content=f"**{self.game_type}** — choose **Map** (page {self.page+2})", view=MapButtons(self.server_id, self.game_type, page=self.page+1))
+            return
+        if cid == "map_cancel":
+            await inter.response.edit_message(content="Cancelled.", view=None)
+            return
+        if cid.startswith("map_"):
+            map_pretty = cid[4:]
+            await start_variant_buttons(inter, self.server_id, self.game_type, map_pretty)
+
+class VariantButtons(discord.ui.View):
+    def __init__(self, server_id: str, game_type: str, map_pretty: str):
+        super().__init__(timeout=240)
+        self.server_id = server_id
+        self.game_type = game_type
+        self.map_pretty = map_pretty
+
+        variants = [m for m in AVAILABLE_MAPS if m["gameType"] == game_type and m["mapPretty"] == map_pretty]
         for v in variants:
             label = v["variant"]
             map_id = v["mapId"]
@@ -191,17 +241,19 @@ def chunked(seq, size):
             await confirm_change_map(inter, self.server_id, self.game_type, self.map_pretty, map_id)
 
 async def start_change_map_buttons(inter: discord.Interaction, server_id: str):
-    # Start the new dropdown-based wizard
-    set_user_server(inter.user.id, server_id)
-    await start_change_map_wizard(inter, server_id)
+    v = GameTypeButtons(server_id)
+    _wire_button_callbacks(v)
+    await inter.response.send_message("Choose **Game Type**", ephemeral=True, view=v)
 
 async def start_map_buttons(inter: discord.Interaction, server_id: str, game_type: str):
-    # Deprecated: replaced by dropdown flow
-    pass
+    v = MapButtons(server_id, game_type, page=0)
+    _wire_button_callbacks(v)
+    await inter.response.edit_message(content=f"**{game_type}** — choose **Map** (page 1)", view=v)
 
 async def start_variant_buttons(inter: discord.Interaction, server_id: str, game_type: str, map_pretty: str):
-    # Deprecated: replaced by dropdown flow
-    pass
+    v = VariantButtons(server_id, game_type, map_pretty)
+    _wire_button_callbacks(v)
+    await inter.response.edit_message(content=f"**{game_type}** → **{map_pretty}** — choose **Variant / Time-of-Day**", view=v)
 
 
 class GameTypeView(discord.ui.View):
@@ -348,97 +400,23 @@ async def start_set_objectives_wizard(inter: discord.Interaction, server_id: str
 async def audit(inter: discord.Interaction, action: str, payload: dict):
     if AUDIT_CHANNEL_ID <= 0:
         return
-    ch = inter.client.get_channel(AUDIT_CHANNEL_ID)
-    if not ch:
+    channel = await _fetch_channel()
+    if not channel:
+        print("Control panel channel unavailable; check permissions and ID.")
         return
-    embed = discord.Embed(title="RCON Action", description=action)
-    embed.add_field(name="User", value=f"{inter.user.mention}", inline=True)
-    for k, v in payload.items():
-        if isinstance(v, (str, int, float)):
-            embed.add_field(name=k, value=str(v), inline=True)
-    # Truncate big fields
-    js = json.dumps(payload)[:900]
-    embed.add_field(name="Payload", value=f"```json\n{js}\n```", inline=False)
-    await ch.send(embed=embed)
-
-# === Bot ===
-
-class Bot(commands.Bot):
-    def __init__(self):
-        intents = discord.Intents.default()
-        intents.guilds = True
-        super().__init__(command_prefix="!", intents=intents)
-
-    async def setup_hook(self):
-        # Persistent control panel
-        self.add_view(ControlPanel())
-
-        # Guild-scoped command sync if provided
-        if GUILD_ID:
-            await self.tree.sync(guild=discord.Object(id=GUILD_ID))
-            log.info(f"Synced slash commands to guild {GUILD_ID}")
-        else:
-            await self.tree.sync()
-            log.info("Synced slash commands globally (no DISCORD_GUILD_ID set)")
-
-    async def on_ready(self):
-        log.info(f"Bot connected as {self.user}")
-        if CHANNEL_ID:
-            ch = self.get_channel(CHANNEL_ID)
-            if ch:
-                # Post control panel if not present / as a fresh message
-                content = (
-                    "**HLL RCON Control Panel**\n"
-                    "1) Select **Server**\n"
-                    "2) Choose **Change Map** or **Set Objectives (current map)**"
-                )
-                await ch.send(content, view=ControlPanel())
+    await panel_cog.ensure_panel_message(channel)
 
 
-bot = Bot()
+async def main() -> None:
+    global panel_cog
+    if not clients:
+        print("Warning: no CRCON clients configured; interactions will be limited.")
+    try:
+        panel_cog = await setup_control_panel(bot, settings, clients)
+        await bot.start(settings.token)
+    finally:
+        await asyncio.gather(*(client.aclose() for client in clients.values()), return_exceptions=True)
 
-@bot.tree.command(name="rcon_panel", description="Post or refresh the RCON Control Panel here.")
-async def rcon_panel(inter: discord.Interaction):
-    view = ControlPanel()
-    # remember the user's last chosen server for wizard threading
-    if isinstance(inter.user, discord.Member):
-        # initialize ctx with default if only one server
-        if len(SERVERS) == 1:
-            set_user_server(inter.user.id, next(iter(SERVERS.keys())))
-    content = (
-        "**HLL RCON Control Panel**\n"
-        "1) Select **Server**\n"
-        "2) Choose **Change Map** or **Set Objectives (current map)**"
-    )
-    await inter.response.send_message("Posting control panel…", ephemeral=True)
-    msg = await inter.channel.send(content, view=view)
-    await inter.followup.send(f"Panel posted: {msg.jump_url}", ephemeral=True)
-
-@rcon_panel.error
-async def rcon_panel_error(inter: discord.Interaction, error: Exception):
-    await inter.response.send_message(f"Error: {error}", ephemeral=True)
-
-if ADMIN_ROLE:
-    rcon_panel = app_commands.checks.has_role(ADMIN_ROLE)(rcon_panel)
-
-def main():
-    if not TOKEN:
-        raise SystemExit("DISCORD_TOKEN not set")
-    bot.run(TOKEN)
 
 if __name__ == "__main__":
-    main()
-
-
-@bot.tree.command(name="rcon_http_ping", description="Test CRCON HTTP execute with GetClientReferenceData(SetSectorLayout).")
-async def rcon_http_ping(inter: discord.Interaction, server_id: str | None = None):
-    client = get_http_client(server_id)
-    if not client:
-        return await inter.response.send_message("HTTP client not configured (check CRCON_BASE_URL / CRCON_API_TOKEN_DJANGO).", ephemeral=True)
-    await inter.response.send_message("Pinging CRCON HTTP…", ephemeral=True)
-    res = await client.get_client_reference("SetSectorLayout")
-    out = json.dumps(res)[:1900]
-    await inter.followup.send(f"HTTP OK. Response snippet:\n```json\n{out}\n```", ephemeral=True)
-
-if ADMIN_ROLE:
-    rcon_http_ping = app_commands.checks.has_role(ADMIN_ROLE)(rcon_http_ping)
+    asyncio.run(main())
